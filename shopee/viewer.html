@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>蝦皮按讚好物</title>
+  <link rel="stylesheet" href="viewer.css">
+</head>
+<body>
+  <header class="bar">
+    <b class="brand">按讚好物</b>
+    <span class="count" id="count">載入中…</span>
+
+    <input class="q" id="q" type="search" placeholder="搜尋商品或賣場…" autocomplete="off" disabled>
+
+    <select class="sort" id="sort" disabled>
+      <option value="def">預設（最近按讚）</option>
+      <option value="pa">價格：低 → 高</option>
+      <option value="pd">價格：高 → 低</option>
+      <option value="r">評分最高</option>
+      <option value="s">銷量最高</option>
+    </select>
+
+    <label class="chk"><input type="checkbox" id="hideDead"> 隱藏已下架</label>
+
+    <span class="spacer"></span>
+
+    <button id="copy" disabled>複製為表格</button>
+    <button id="csv" disabled>下載 CSV</button>
+    <button id="refresh" disabled>重新整理</button>
+  </header>
+
+  <main id="main">
+    <!-- 狀態區塊：載入 / 錯誤 / 空清單 -->
+    <section class="state" id="state" hidden>
+      <div class="state-icon" id="stateIcon">⏳</div>
+      <h2 class="state-title" id="stateTitle"></h2>
+      <p class="state-desc" id="stateDesc"></p>
+      <div class="state-actions" id="stateActions"></div>
+    </section>
+
+    <!-- 載入骨架 -->
+    <div class="grid" id="skeleton" hidden></div>
+
+    <!-- 商品格 -->
+    <div class="grid" id="grid" hidden></div>
+  </main>
+
+  <script type="module" src="viewer.js"></script>
+</body>
+</html>

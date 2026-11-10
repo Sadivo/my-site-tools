@@ -1,0 +1,96 @@
+{
+  "manifest_version": 3,
+  "name": "我的網站小工具",
+  "version": "1.0.0",
+  "description": "Bella / GQ / Vogue 首頁更多最新文章、VERSE 與 Harper's BAZAAR 文章日期顯示、蝦皮按讚好物清單。",
+  "permissions": [
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://shopee.tw/*",
+    "https://www.gq.com.tw/*"
+  ],
+  "action": {
+    "default_title": "蝦皮按讚好物",
+    "default_icon": {
+      "16": "icons/16.png",
+      "48": "icons/48.png",
+      "128": "icons/128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/16.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  },
+  "background": {
+    "service_worker": "shopee/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.bella.tw/",
+        "https://bella.tw/",
+        "https://www.bella.tw/?*",
+        "https://bella.tw/?*"
+      ],
+      "js": [
+        "bella/bella-more.user.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.gq.com.tw/"
+      ],
+      "js": [
+        "gq/content.js"
+      ],
+      "css": [
+        "gq/style.css"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.vogue.com.tw/",
+        "https://www.vogue.com.tw/?*"
+      ],
+      "js": [
+        "vogue/content.js"
+      ],
+      "css": [
+        "vogue/style.css"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.verse.com.tw/articles/*"
+      ],
+      "js": [
+        "verse/content.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.harpersbazaar.com/tw/*"
+      ],
+      "js": [
+        "bazaar/content.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://shopee.tw/*"
+      ],
+      "js": [
+        "shopee/menu.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
