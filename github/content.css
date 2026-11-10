@@ -1,0 +1,91 @@
+/* GitHub Size Lens — uses GitHub's own CSS variables so light/dark themes both work. */
+.gsl-th {
+  width: 104px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.gsl-td {
+  width: 104px;
+  text-align: right;
+  white-space: nowrap;
+  vertical-align: middle;
+  color: var(--fgColor-muted, #59636e);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.gsl-dl {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  padding: 2px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.gsl-dl:hover,
+.gsl-dl:focus-visible {
+  color: var(--fgColor-accent, #0969da);
+  background: var(--bgColor-neutral-muted, rgba(129, 139, 152, 0.12));
+}
+
+.gsl-repo-size-li {
+  display: flex;
+}
+
+.gsl-repo-size {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--borderColor-default, #d1d9e0);
+  border-radius: 6px;
+  background: var(--bgColor-muted, #f6f8fa);
+  color: var(--fgColor-default, #1f2328);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.gsl-repo-size .octicon {
+  color: var(--fgColor-muted, #59636e);
+}
+
+.gsl-repo-size.gsl-inline {
+  height: 22px;
+  margin-left: 8px;
+  padding: 0 8px;
+  font-weight: 400;
+  vertical-align: middle;
+}
+
+#gsl-notice {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 9999;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  max-width: min(480px, calc(100vw - 32px));
+  padding: 12px 14px;
+  border: 1px solid var(--borderColor-attention-muted, #d4a72c);
+  border-radius: 8px;
+  background: var(--bgColor-attention-muted, #fff8c5);
+  color: var(--fgColor-default, #1f2328);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+#gsl-notice span {
+  flex: 1;
+}

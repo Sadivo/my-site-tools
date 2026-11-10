@@ -2,14 +2,18 @@
   "manifest_version": 3,
   "name": "我的網站小工具",
   "version": "1.0.0",
-  "description": "Bella / GQ / Vogue 首頁更多最新文章、VERSE 與 Harper's BAZAAR 文章日期顯示、蝦皮按讚好物清單。",
+  "description": "Bella / GQ / Vogue 首頁更多最新文章、VERSE 與 Harper's BAZAAR 文章日期顯示、蝦皮按讚好物清單、GitHub repo 與檔案大小。",
+  "minimum_chrome_version": "116",
   "permissions": [
     "scripting",
-    "tabs"
+    "tabs",
+    "storage",
+    "downloads"
   ],
   "host_permissions": [
     "https://shopee.tw/*",
-    "https://www.gq.com.tw/*"
+    "https://www.gq.com.tw/*",
+    "https://api.github.com/*"
   ],
   "action": {
     "default_title": "蝦皮按讚好物",
@@ -25,7 +29,11 @@
     "128": "icons/128.png"
   },
   "background": {
-    "service_worker": "shopee/background.js"
+    "service_worker": "background.js"
+  },
+  "options_ui": {
+    "page": "github/options.html",
+    "open_in_tab": true
   },
   "content_scripts": [
     {
@@ -89,6 +97,18 @@
       ],
       "js": [
         "shopee/menu.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://github.com/*"
+      ],
+      "js": [
+        "github/content.js"
+      ],
+      "css": [
+        "github/content.css"
       ],
       "run_at": "document_idle"
     }

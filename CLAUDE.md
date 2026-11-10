@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 專案概要
 
-這個 repo 是單一個 Chrome MV3 擴充（「我的網站小工具」），由原本四個獨立擴充合併而成，原資料夾已刪除。純前端、零依賴、沒有 build 步驟：直接在 `chrome://extensions` 以「載入未封裝項目」選 repo 根目錄（裝著 `manifest.json` 那一層）。改完程式按擴充的重新載入（↻），已開著的目標網站分頁要重新整理才會套用新的 content script。
+這個 repo 是單一個 Chrome MV3 擴充（「我的網站小工具」），把幾個網站的小功能合在一起（最早由四個獨立擴充合併而成，GitHub Size Lens 之後加入）。純前端、零依賴、沒有 build 步驟：直接在 `chrome://extensions` 以「載入未封裝項目」選 repo 根目錄（裝著 `manifest.json` 那一層）。改完程式按擴充的重新載入（↻），已開著的目標網站分頁要重新整理才會套用新的 content script。
 
 GitHub：https://github.com/Sadivo/my-site-tools 。GQ 部分的原始歷史與 `gq_scraper.py` 在 https://github.com/Sadivo/gq-extension 。
 
@@ -20,10 +20,20 @@ node --check gq/content.js                            # 非 module 腳本的語�
 
 ## 架構
 
-`manifest.json` 是唯一把各模組串起來的地方：
+`manifest.json` 與根目錄的 `background.js` 是把各模組串起來的地方：
 
 - **bella / gq / vogue / verse / bazaar**：各自只是一支 content script，只在自己網站的特定頁面注入（matches 寫得很窄，例如 GQ 只有首頁 `https://www.gq.com.tw/`）。資料都從同源抓：Bella 抓頻道列表頁加 `/feed/google`，用 localStorage 快取；GQ 抓月份 sitemap `sitemap-YYYY-MM.xml`，再逐篇抓 meta；Vogue（和 GQ 同為 Condé Nast 平台）不用 sitemap，而是抓站內搜尋頁 `/search?q=&sort=publishdate+desc&page=N`，從 `window.__PRELOADED_STATE__.transformed.search.items` 拿現成的標題、圖片、分類與 pubDate，一頁 24 篇，區塊插在首頁「Top Stories」那列下方；VERSE 對列表上每篇文章各發一次 fetch 取日期；BAZAAR 例外，matches 涵蓋整個 `/tw/*`，日期優先讀頁面內嵌的 `#__NEXT_DATA__`（`display_id` → `publish_from`），找不到才逐篇串流抓文章頁、讀到 `article:modified_time` 就中斷（這個值才等於網站顯示的 Published 日期，`article:published_time` 是最初建立時間）。首頁 LATEST 加長則是抓 6 個頻道首頁（fashion、beauty、celebrity、life、culture、luxury）的 `__NEXT_DATA__` 合併排序，原本的 LATEST 區塊（React 管）整個藏起來，改把它複製一份放到封面故事下方再往裡加卡片。這個區塊是 CSS grid，卡片格子佔 `grid-area: content`，加的格子和按鈕必須跟原格子包進同一個 content 容器，直接當兄弟節點插入會疊在同一格。網站自己的 `/tw/api/feed-content` 分頁 API 會回 500，不能用。五者共同的弱點是依賴目標網站的 DOM 結構，網站改版就會失效。
-- **shopee**：唯一用到 service worker、工具列按鈕與額外權限（`scripting`、`tabs`）的模組。`manifest.json` 的 `background.service_worker` 指向 `shopee/background.js`，若之後其他模組也需要背景邏輯，得在這支檔案上擴充，或改成一支總入口再 `importScripts`。
+- **shopee**：擁有工具列按鈕（`chrome.action.onClicked`），用到 `scripting`、`tabs` 權限。
+- **github**（GitHub Size Lens）：`github.com/*` 的 content script 顯示 repo 大小、資料夾檔案大小與下載按鈕；所有 `api.github.com` 呼叫與 token 都只在 `github/background.js`。它擁有整個擴充唯一的設定頁（`options_ui` → `github/options.html`），從工具列圖示右鍵「選項」進入。設定在 `chrome.storage.sync`，token 在 `storage.local`，快取 5 分鐘在 `storage.session`。
+
+### 共用的 service worker
+
+MV3 只能有一個 service worker。根目錄的 `background.js` 用 `importScripts` 載入 `shopee/background.js` 與 `github/background.js`，兩支在同一個全域範圍執行：
+
+- 最外層的變數與函式名稱不能重複（目前沒有衝突；新增模組時要檢查）。
+- 各模組各自掛 `chrome.runtime.onMessage`，Chrome 會呼叫每一個 listener，最先 `sendResponse` 的贏。**每個 listener 只能對自己的訊息類型回 `true`，其他一律回 `false`**。蝦皮用小寫類型（`openViewer`、`proxyFetch`、`releaseProxy`），GitHub 用大寫（`GET_REPO`、`GET_DIR`、`DOWNLOAD`、`CHECK_STATUS`、`CLEAR_CACHE`、`OPEN_OPTIONS`，列在 `HANDLED_TYPES`）。原版 GitHub Size Lens 對所有訊息都回 `true` 並立刻答 `unknown`，會讓蝦皮 `proxyFetch` 拿到失敗結果，整合時已修掉。
+- 工具列按鈕只能有一個行為，目前給蝦皮；GitHub 原版「點圖示開設定頁」已移除。
+- `github/background.js` 在快取寫滿、清除快取、token 變更時會呼叫 `chrome.storage.session.clear()`，清掉整個 session storage。其他模組若要用 `storage.session`，得先把這裡改成只清自己的 key。
 
 ### 蝦皮按讚清單的資料流
 

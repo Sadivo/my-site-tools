@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>GitHub Size Lens 設定</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main>
+    <header>
+      <img src="icons/icon48.png" alt="" width="40" height="40">
+      <div>
+        <h1>GitHub Size Lens</h1>
+        <p class="muted">顯示 repo 大小、資料夾內每個檔案的大小，以及單檔下載按鈕。</p>
+      </div>
+    </header>
+
+    <section>
+      <h2>顯示項目</h2>
+      <label class="check"><input type="checkbox" id="showRepoSize"> Repo 大小（repo 首頁上方、子頁面的路徑旁）</label>
+      <label class="check"><input type="checkbox" id="showFileSize"> 資料夾列表中每個檔案的大小</label>
+      <label class="check"><input type="checkbox" id="showDownload"> 資料夾列表中的單檔下載按鈕</label>
+    </section>
+
+    <section>
+      <h2>GitHub Token（選填）</h2>
+      <p class="muted">
+        沒有 token 時，GitHub API 每小時只能呼叫 60 次（依 IP 計算），而且看不到私有 repo。
+        設定 token 後每小時 5,000 次。Token 只存在這台電腦的瀏覽器裡（chrome.storage.local，不會同步），
+        也只會送到 <code>api.github.com</code>。
+      </p>
+      <form id="token-form" autocomplete="off">
+        <input type="password" id="token" spellcheck="false" placeholder="github_pat_… 或 ghp_…">
+        <div class="row">
+          <button type="submit" class="primary">儲存</button>
+          <button type="button" id="clear">清除 token</button>
+          <button type="button" id="check">檢查目前額度</button>
+        </div>
+      </form>
+      <p id="status" role="status"></p>
+
+      <details>
+        <summary>怎麼建立 token？</summary>
+        <ol>
+          <li>到 <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → Fine-grained personal access tokens</a>。</li>
+          <li>Repository access：只看公開 repo 選「Public repositories」；要看私有 repo 就選「All repositories」或指定 repo。</li>
+          <li>Permissions：私有 repo 需要 <b>Contents: Read-only</b>（Metadata 會自動帶上）。只看公開 repo 不需要任何權限。</li>
+          <li>設一個到期日，建立後把 token 貼到上面儲存。</li>
+        </ol>
+      </details>
+    </section>
+
+    <section>
+      <h2>快取</h2>
+      <p class="muted">同一個 repo / 資料夾的結果會快取 5 分鐘，以節省額度。</p>
+      <button type="button" id="clear-cache">清除快取</button>
+    </section>
+  </main>
+  <script src="options.js"></script>
+</body>
+</html>
