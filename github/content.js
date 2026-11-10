@@ -94,10 +94,10 @@
     box.setAttribute('role', 'status');
     const text = document.createElement('span');
     if (res.reason === 'auth') {
-      text.textContent = 'GitHub Size Lens：已儲存的 GitHub token 無效或已過期，請到設定頁更新。';
+      text.textContent = 'GitHub Size Lens：GitHub 不接受已儲存的通行碼，可能已經過期，請到設定頁更新。';
     } else {
       const when = res.reset ? `（約 ${new Date(res.reset).toLocaleTimeString()} 重置）` : '';
-      text.textContent = `GitHub Size Lens：GitHub API 額度用完了${when}。設定 token 後每小時可用 5,000 次。`;
+      text.textContent = `GitHub Size Lens：本小時的查詢次數用完了${when}。到設定頁設定通行碼，每小時可以查 5,000 次。`;
     }
     const open = document.createElement('button');
     open.type = 'button';

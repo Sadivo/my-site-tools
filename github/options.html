@@ -16,44 +16,59 @@
     </header>
 
     <section>
-      <h2>顯示項目</h2>
-      <label class="check"><input type="checkbox" id="showRepoSize"> Repo 大小（repo 首頁上方、子頁面的路徑旁）</label>
-      <label class="check"><input type="checkbox" id="showFileSize"> 資料夾列表中每個檔案的大小</label>
-      <label class="check"><input type="checkbox" id="showDownload"> 資料夾列表中的單檔下載按鈕</label>
+      <h2>要顯示哪些東西</h2>
+      <p class="muted">打勾就會出現在 GitHub 頁面上，取消打勾就不顯示。改了馬上生效。</p>
+      <label class="check"><input type="checkbox" id="showRepoSize"> 整個 repo 的大小（在 Star / Fork 那排按鈕的最前面）</label>
+      <label class="check"><input type="checkbox" id="showFileSize"> 檔案列表裡每個檔案的大小（多一欄「Size」）</label>
+      <label class="check"><input type="checkbox" id="showDownload"> 檔案列表裡的下載按鈕（按了直接存檔）</label>
     </section>
 
     <section>
-      <h2>GitHub Token（選填）</h2>
+      <h2>GitHub 通行碼（不設也能用）</h2>
       <p class="muted">
-        沒有 token 時，GitHub API 每小時只能呼叫 60 次（依 IP 計算），而且看不到私有 repo。
-        設定 token 後每小時 5,000 次。Token 只存在這台電腦的瀏覽器裡（chrome.storage.local，不會同步），
-        也只會送到 <code>api.github.com</code>。
+        這個擴充要向 GitHub 查詢大小。GitHub 限制：沒有表明身分的話，每小時只能查 60 次。
+        平常每看一頁大約用掉 1～2 次，看過的資料 5 分鐘內不會重查，所以一般逛逛通常夠用。
+      </p>
+      <p class="muted">
+        如果常常看到「查詢次數用完了」的提示，或想看<b>私有 repo</b> 的大小，
+        就到 GitHub 申請一組通行碼（GitHub 稱為 token），貼在下面。設定後每小時可以查 5,000 次。
+      </p>
+      <p class="muted">
+        通行碼只存在這台電腦的 Chrome 裡，不會同步到其他電腦，也只會送給 GitHub。
       </p>
       <form id="token-form" autocomplete="off">
-        <input type="password" id="token" spellcheck="false" placeholder="github_pat_… 或 ghp_…">
+        <input type="password" id="token" spellcheck="false" placeholder="貼上通行碼（github_pat_ 開頭）">
         <div class="row">
           <button type="submit" class="primary">儲存</button>
-          <button type="button" id="clear">清除 token</button>
-          <button type="button" id="check">檢查目前額度</button>
+          <button type="button" id="clear">刪除通行碼</button>
+          <button type="button" id="check">查看本小時還剩幾次</button>
         </div>
       </form>
       <p id="status" role="status"></p>
 
       <details>
-        <summary>怎麼建立 token？</summary>
+        <summary>怎麼申請通行碼？（點開看步驟）</summary>
         <ol>
-          <li>到 <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → Fine-grained personal access tokens</a>。</li>
-          <li>Repository access：只看公開 repo 選「Public repositories」；要看私有 repo 就選「All repositories」或指定 repo。</li>
-          <li>Permissions：私有 repo 需要 <b>Contents: Read-only</b>（Metadata 會自動帶上）。只看公開 repo 不需要任何權限。</li>
-          <li>設一個到期日，建立後把 token 貼到上面儲存。</li>
+          <li>打開 <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub 的通行碼申請頁</a>（要先登入 GitHub）。</li>
+          <li><b>Token name</b>：隨便取個名字，例如「Size Lens」。</li>
+          <li><b>Expiration</b>（有效期限）：選一個期限，例如 90 天。到期後回來重新申請、再貼一次就好。</li>
+          <li><b>Repository access</b>（能看哪些 repo）：
+            只看別人的公開 repo，選 <b>Public repositories</b>，下一步可以跳過。
+            也要看自己的私有 repo，選 <b>All repositories</b>。</li>
+          <li>選了 All repositories 的話：在 <b>Permissions</b> 找到 <b>Contents</b>，改成 <b>Read-only</b>（只能讀、不能改）。其他都不用動。</li>
+          <li>拉到最下面按 <b>Generate token</b>，複製產生的那串文字，貼到上面的框框按「儲存」。<br>
+            那串文字只會顯示這一次，關掉頁面就看不到了，沒複製到就重新申請一組。</li>
         </ol>
       </details>
     </section>
 
     <section>
-      <h2>快取</h2>
-      <p class="muted">同一個 repo / 資料夾的結果會快取 5 分鐘，以節省額度。</p>
-      <button type="button" id="clear-cache">清除快取</button>
+      <h2>暫存資料</h2>
+      <p class="muted">
+        查過的大小會暫存 5 分鐘，這段時間再看同一頁就不重查，省下查詢次數。
+        如果剛 push 了新檔案、想馬上看到新的大小，按下面的按鈕清掉暫存。
+      </p>
+      <button type="button" id="clear-cache">清除暫存，重新查詢</button>
     </section>
   </main>
   <script src="options.js"></script>
